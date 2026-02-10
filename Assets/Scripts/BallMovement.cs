@@ -11,6 +11,7 @@ public class BallMovement : MonoBehaviour
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
+    public float lookSens;
 
     //grounded check
     bool grounded;
@@ -24,9 +25,10 @@ public class BallMovement : MonoBehaviour
     void Update()
     {
         GlobalController.getMouse();
-        move(movement * );
+        
         //pointArrow();
-        GetComponent<Camera>().transform.rotation = Quaternion.Euler(GlobalController.direction.y, GlobalController.direction.x, 0);
+        GetComponent<Camera>().transform.rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
+        move(movement * GetComponent<Camera>().transform.rotation.y);
     }
 
     void OnMove(InputValue value)

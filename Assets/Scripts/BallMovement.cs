@@ -6,10 +6,11 @@ using UnityEngine.InputSystem;
 public class BallMovement : MonoBehaviour
 {
     Vector2 movement;
+    Vector2 lookDirection;
+
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
-    
 
     //grounded check
     bool grounded;
@@ -22,8 +23,10 @@ public class BallMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        getMouse();
-        move(movement);
+        GlobalController.getMouse();
+        move(movement * );
+        //pointArrow();
+        GetComponent<Camera>().transform.rotation = Quaternion.Euler(GlobalController.direction.y, GlobalController.direction.x, 0);
     }
 
     void OnMove(InputValue value)
@@ -41,6 +44,11 @@ public class BallMovement : MonoBehaviour
     public void move(Vector2 dir)
     {
         rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
+    }
+
+    public void pointArrow()
+    {
+        //transform.GetChild.rotation = Quaternion.Euler(0,GlobalController.direction,0);
     }
 
 }

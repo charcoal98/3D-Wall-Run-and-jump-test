@@ -9,6 +9,7 @@ public class BallMovement : MonoBehaviour
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
+    
 
     //grounded check
     bool grounded;
@@ -21,7 +22,7 @@ public class BallMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        getMouse();
         move(movement);
     }
 

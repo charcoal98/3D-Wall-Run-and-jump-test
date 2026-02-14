@@ -26,25 +26,30 @@ public class BallMovement : MonoBehaviour
     {
         GlobalController.getMouse();
         
-        //pointArrow();
+        //Move Camera with mouse
         GetComponent<Camera>().transform.rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
-        move(movement * GetComponent<Camera>().transform.rotation.y);
+        //Get camera y rotation as a vector2
+        lookDirection = getCameraLook();
+        move(movement * lookDirection);
     }
 
     void OnMove(InputValue value)
     {
         movement = value.Get<Vector2>();
-        Debug.Log(movement);
+
+        //Debug.Log(movement);
     }
 
     void OnJump()
     {
         rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
-        Debug.Log("Blarg");
     }
 
     public void move(Vector2 dir)
     {
+        Debug.Log("lookDirection: " + lookDirection);
+        Debug.Log("dir: "+dir);
+        Debug.Log("look+Dir: " + dir.x * lookDirection.x + ", " + dir.y * lookDirection.y);
         rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
     }
 
@@ -53,4 +58,44 @@ public class BallMovement : MonoBehaviour
         //transform.GetChild.rotation = Quaternion.Euler(0,GlobalController.direction,0);
     }
 
+    public Vector2 getCameraLook()
+    {
+        //float cam = Quaternion.Angle(Quaternion.foward, GetComponent<Camera>().transform.rotation);
+        float cam = GlobalController.direction.x;
+        return new Vector2(Mathf.Cos(cam), Mathf.Sin(cam));
+    }
+
+    //Curtacy of adrianb
+    /*
+    public Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
+    {
+        float projVel = Vector3.Dot(prevVelocity, accelDir);
+        float accelVel = accelerate * Time.fixedDeltaTime;
+
+        if(projVel + accelVel > max_velocity)
+            accelVel = max_velocity - projVel;
+
+        return prevVelocity + accelDir * accelVel;
+    }
+
+    private Vector3 MoveGround(Vector3 accelDir, Vector3 prevVelocity)
+    {
+        // Apply Friction
+        float speed = prevVelocity.magnitude;
+        if (speed != 0) // To avoid divide by zero errors
+        {
+            float drop = speed * friction * Time.fixedDeltaTime;
+            prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
+        }
+
+        // ground_accelerate and max_velocity_ground are server-defined movement variables
+        return Accelerate(accelDir, prevVelocity, ground_accelerate, max_velocity_ground);
+    }
+
+    private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
+    {
+        // air_accelerate and max_velocity_air are server-defined movement variables
+        return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
+    }
+    */
 }

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.InputSystem;
-public class BallMovement : MonoBehaviour
+public class BallinputDirection : MonoBehaviour
 {
-    Vector2 movement;
-    Vector2 lookDirection;
-    Vector2 lookRight;
+    Vector2 inputDirection;
+    Vector2 moveDirection;
 
     Camera cam;
 
@@ -48,21 +47,19 @@ public class BallMovement : MonoBehaviour
 
         
         transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
-
-        lookDirection = getCameraLookFoward().normalized;
-        lookRight = getCameraLookRight().normalized;
         
-        Debug.DrawLine(Vector3.zero, new Vector3(lookDirection.x * 5, 0, lookDirection.y * 5), Color.black);
+        Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.y * 5), Color.black);
 
-        if(movement != Vector2.zero){
-            move(movement, lookDirection, lookRight);
+        moveDirection = inputDirection.x * getCameraLookRight().normalized + inputDirection.y * getCameraLookFoward().normalized;
+        if(inputDirection != Vector2.zero){
+            move(moveDirection);
         }
         
     }
 
     void OnMove(InputValue value)
     {
-        movement = value.Get<Vector2>();
+        inputDirection = value.Get<Vector2>();
     }
 
     void OnJump()
@@ -71,10 +68,8 @@ public class BallMovement : MonoBehaviour
             rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
     }
 
-    public void move(Vector2 dir, Vector2 foward, Vector2 right)
-    {
-        //Debug.Log("look+Dir: " + dir.x * lookDirection.x + ", " + dir.y * lookDirection.y);
-        Vector2 move = dir.x * foward + dir.y * right;
+    public void move(Vector2 dir)
+    {       
         rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
     }
 
@@ -115,13 +110,13 @@ public class BallMovement : MonoBehaviour
             prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
         }
 
-        // ground_accelerate and max_velocity_ground are server-defined movement variables
+        // ground_accelerate and max_velocity_ground are server-defined inputDirection variables
         return Accelerate(accelDir, prevVelocity, ground_accelerate, max_velocity_ground);
     }
 
     private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
     {
-        // air_accelerate and max_velocity_air are server-defined movement variables
+        // air_accelerate and max_velocity_air are server-defined inputDirection variables
         return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
     }
     */

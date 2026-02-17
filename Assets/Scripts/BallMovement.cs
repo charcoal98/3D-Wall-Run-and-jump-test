@@ -7,6 +7,7 @@ public class BallMovement : MonoBehaviour
 {
     Vector2 movement;
     Vector2 lookDirection;
+    Vector2 lookRight;
 
     Camera cam;
 
@@ -16,7 +17,9 @@ public class BallMovement : MonoBehaviour
     public float lookSens;
 
     //grounded check
-    bool grounded;
+    public bool grounded;
+    Vector3 origin;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +30,18 @@ public class BallMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        grounded = false;
+        origin = transform.position;
+        RaycastHit[] hits = Physics.SphereCastAll(origin, 1f, Vector3.down, .5f);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                grounded = true;
+            }
+        }
+
         if(!Input.GetKey(KeyCode.J)){
             GlobalController.getMouse();
         }
@@ -34,12 +49,13 @@ public class BallMovement : MonoBehaviour
         
         transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
 
-        lookDirection = getCameraLook2D();
+        lookDirection = getCameraLookFoward().normalized;
+        lookRight = getCameraLookRight().normalized;
         
         Debug.DrawLine(Vector3.zero, new Vector3(lookDirection.x * 5, 0, lookDirection.y * 5), Color.black);
 
         if(movement != Vector2.zero){
-            move(Vector2.Lerp(lookDirection, movement, 0));
+            move(movement, lookDirection, lookRight);
         }
         
     }
@@ -51,23 +67,27 @@ public class BallMovement : MonoBehaviour
 
     void OnJump()
     {
-        rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
+        if (grounded)
+            rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
     }
 
-    public void move(Vector2 dir)
+    public void move(Vector2 dir, Vector2 foward, Vector2 right)
     {
         //Debug.Log("look+Dir: " + dir.x * lookDirection.x + ", " + dir.y * lookDirection.y);
+        Vector2 move = dir.x * foward + dir.y * right;
         rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
     }
 
-    public void pointArrow()
-    {
-        //transform.GetChild.rotation = Quaternion.Euler(0,GlobalController.direction,0);
-    }
-
-    public Vector2 getCameraLook2D()
+    public Vector2 getCameraLookFoward()
     {
         Vector3 direction = transform.GetChild(0).forward;
+        Vector2 cam = new Vector2(direction.x,direction.z);
+        return cam;
+    }
+
+    public Vector2 getCameraLookRight()
+    {
+        Vector3 direction = transform.GetChild(0).right;
         Vector2 cam = new Vector2(direction.x,direction.z);
         return cam;
     }

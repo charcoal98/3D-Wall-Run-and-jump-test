@@ -566,6 +566,7 @@ MonoBehaviour:
   jumpVelo: 10
   moveSpeed: 10
   lookSens: 5
+  grounded: 0
 --- !u!114 &335682509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -820,7 +821,7 @@ GameObject:
   - component: {fileID: 657960025}
   - component: {fileID: 657960024}
   - component: {fileID: 657960023}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

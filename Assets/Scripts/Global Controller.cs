@@ -24,7 +24,7 @@ public class GlobalController : MonoBehaviour
         turn.x = Input.GetAxis("Mouse X");
         turn.y = -1 * Input.GetAxis("Mouse Y");
         direction += turn;
-        //Debug.Log(direction);
+        direction.y = Mathf.Clamp(direction.y, -18, 18);
     }
 
     

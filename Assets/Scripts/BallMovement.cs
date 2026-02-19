@@ -13,7 +13,7 @@ public class BallinputDirection : MonoBehaviour
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
-    public float lookSens;
+    public static float lookSense;
 
     //grounded check
     public bool grounded;
@@ -45,9 +45,12 @@ public class BallinputDirection : MonoBehaviour
             GlobalController.getMouse();
         }
 
-        
-        transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
-        
+        //Rotate Camera
+        rotateCamera();
+
+
+
+
         Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.y * 5), Color.black);
 
         moveDirection = inputDirection.x * getCameraLookRight().normalized + inputDirection.y * getCameraLookFoward().normalized;
@@ -55,6 +58,12 @@ public class BallinputDirection : MonoBehaviour
             move(moveDirection);
         }
         
+    }
+
+    public void rotateCamera()
+    {
+        float xRotation = GlobalController.direction.y * lookSense;
+        transform.GetChild(0).rotation = Quaternion.Euler(xRotation, GlobalController.direction.x * lookSense, 0);
     }
 
     void OnMove(InputValue value)

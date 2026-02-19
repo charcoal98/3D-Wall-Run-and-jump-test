@@ -6,14 +6,24 @@ using UnityEngine.InputSystem;
 public class BallinputDirection : MonoBehaviour
 {
     Vector2 inputDirection;
-    Vector2 moveDirection;
+    Vector3 moveDirection;
 
+    //Velocity Limits for the BHOP
+    public float max_velocity_ground;
+    public float max_velocity_air;
+
+    //accelerate
+    public float air_accelerate;
+    public float ground_accelerate;
+
+    //friction for surface
+    public float friction;
     Camera cam;
 
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
-    public static float lookSense;
+    public float lookSense;
 
     //grounded check
     public bool grounded;
@@ -44,26 +54,18 @@ public class BallinputDirection : MonoBehaviour
         if(!Input.GetKey(KeyCode.J)){
             GlobalController.getMouse();
         }
-
         //Rotate Camera
         rotateCamera();
-
-
-
-
-        Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.y * 5), Color.black);
-
+        //Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.z * 5), Color.black);
         moveDirection = inputDirection.x * getCameraLookRight().normalized + inputDirection.y * getCameraLookFoward().normalized;
         if(inputDirection != Vector2.zero){
             move(moveDirection);
         }
-        
     }
 
     public void rotateCamera()
     {
-        float xRotation = GlobalController.direction.y * lookSense;
-        transform.GetChild(0).rotation = Quaternion.Euler(xRotation, GlobalController.direction.x * lookSense, 0);
+        transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSense, GlobalController.direction.x * lookSense, 0);
     }
 
     void OnMove(InputValue value)
@@ -77,27 +79,25 @@ public class BallinputDirection : MonoBehaviour
             rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
     }
 
-    public void move(Vector2 dir)
+    public void move(Vector3 dir)
     {       
-        rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
+        rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.z * moveSpeed * Time.deltaTime), ForceMode.Impulse);
     }
 
-    public Vector2 getCameraLookFoward()
+    public Vector3 getCameraLookFoward()
     {
         Vector3 direction = transform.GetChild(0).forward;
-        Vector2 cam = new Vector2(direction.x,direction.z);
-        return cam;
+        return direction;
     }
 
-    public Vector2 getCameraLookRight()
+    public Vector3 getCameraLookRight()
     {
         Vector3 direction = transform.GetChild(0).right;
-        Vector2 cam = new Vector2(direction.x,direction.z);
-        return cam;
+        return direction;
     }
 
-    //Curtacy of adrianb
-    /*
+    //thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html
+    
     public Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
     {
         float projVel = Vector3.Dot(prevVelocity, accelDir);
@@ -128,5 +128,7 @@ public class BallinputDirection : MonoBehaviour
         // air_accelerate and max_velocity_air are server-defined inputDirection variables
         return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
     }
-    */
+
+
+    
 }

@@ -436,9 +436,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d795ecb6775a38e9391975ecd56f60fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  max_velocity_ground: 0
+  max_velocity_air: 0
+  air_accelerate: 0
+  ground_accelerate: 0
+  friction: 0
   jumpVelo: 10
   moveSpeed: 10
-  lookSens: 5
+  lookSense: 5
+  grounded: 0
 --- !u!114 &335682509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -598,7 +604,7 @@ GameObject:
   - component: {fileID: 657960025}
   - component: {fileID: 657960024}
   - component: {fileID: 657960023}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

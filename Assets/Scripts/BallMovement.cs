@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using UnityEngine.InputSystem;
-public class BallMovement : MonoBehaviour
+public class BallinputDirection : MonoBehaviour
 {
-    Vector2 movement;
-    Vector2 lookDirection;
+    Vector2 inputDirection;
+    Vector3 moveDirection;
 
+    //Velocity Limits for the BHOP
+    public float max_velocity_ground;
+    public float max_velocity_air;
+
+    //accelerate
+    public float air_accelerate;
+    public float ground_accelerate;
+
+    //friction for surface
+    public float friction;
     Camera cam;
 
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
-    public float lookSens;
+    public float lookSense;
 
     //grounded check
-    bool grounded;
+    public bool grounded;
+    Vector3 origin;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,53 +39,65 @@ public class BallMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        grounded = false;
+        origin = transform.position;
+        RaycastHit[] hits = Physics.SphereCastAll(origin, 1f, Vector3.down, .5f);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                grounded = true;
+            }
+        }
+
         if(!Input.GetKey(KeyCode.J)){
             GlobalController.getMouse();
         }
-
-        
-        transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSens, GlobalController.direction.x * lookSens, 0);
-
-        lookDirection = getCameraLook2D();
-        
-        Debug.DrawLine(Vector3.zero, new Vector3(lookDirection.x * 5, 0, lookDirection.y * 5), Color.black);
-
-        if(movement != Vector2.zero){
-            move(Vector2.Lerp(lookDirection, movement, 0));
+        //Rotate Camera
+        rotateCamera();
+        //Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.z * 5), Color.black);
+        moveDirection = inputDirection.x * getCameraLookRight().normalized + inputDirection.y * getCameraLookFoward().normalized;
+        if(inputDirection != Vector2.zero){
+            move(moveDirection);
         }
-        
+    }
+
+    public void rotateCamera()
+    {
+        transform.GetChild(0).rotation = Quaternion.Euler(GlobalController.direction.y * lookSense, GlobalController.direction.x * lookSense, 0);
     }
 
     void OnMove(InputValue value)
     {
-        movement = value.Get<Vector2>();
+        inputDirection = value.Get<Vector2>();
     }
 
     void OnJump()
     {
-        rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
+        if (grounded)
+            rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
     }
 
-    public void move(Vector2 dir)
-    {
-        //Debug.Log("look+Dir: " + dir.x * lookDirection.x + ", " + dir.y * lookDirection.y);
-        rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.y * moveSpeed * Time.deltaTime), ForceMode.Impulse);
+    public void move(Vector3 dir)
+    {       
+        rb.AddForce(new Vector3(dir.x * moveSpeed * Time.deltaTime, 0, dir.z * moveSpeed * Time.deltaTime), ForceMode.Impulse);
     }
 
-    public void pointArrow()
-    {
-        //transform.GetChild.rotation = Quaternion.Euler(0,GlobalController.direction,0);
-    }
-
-    public Vector2 getCameraLook2D()
+    public Vector3 getCameraLookFoward()
     {
         Vector3 direction = transform.GetChild(0).forward;
-        Vector2 cam = new Vector2(direction.x,direction.z);
-        return cam;
+        return direction;
     }
 
-    //Curtacy of adrianb
-    /*
+    public Vector3 getCameraLookRight()
+    {
+        Vector3 direction = transform.GetChild(0).right;
+        return direction;
+    }
+
+    //thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html
+    
     public Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
     {
         float projVel = Vector3.Dot(prevVelocity, accelDir);
@@ -95,14 +119,16 @@ public class BallMovement : MonoBehaviour
             prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
         }
 
-        // ground_accelerate and max_velocity_ground are server-defined movement variables
+        // ground_accelerate and max_velocity_ground are server-defined inputDirection variables
         return Accelerate(accelDir, prevVelocity, ground_accelerate, max_velocity_ground);
     }
 
     private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
     {
-        // air_accelerate and max_velocity_air are server-defined movement variables
+        // air_accelerate and max_velocity_air are server-defined inputDirection variables
         return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
     }
-    */
+
+
+    
 }

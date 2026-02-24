@@ -42,18 +42,6 @@ public class BallinputDirection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        grounded = false;
-        origin = transform.position;
-        RaycastHit[] hits = Physics.SphereCastAll(origin, 1f, Vector3.down, .5f);
-        for (int i = 0; i < hits.Length; i++)
-        {
-            RaycastHit hit = hits[i];
-            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
-            {
-                grounded = true;
-            }
-        }
-
         if(!Input.GetKey(KeyCode.J)){
             GlobalController.getMouse();
         }
@@ -97,6 +85,13 @@ public class BallinputDirection : MonoBehaviour
     {
         if (grounded){
             rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
+            grounded = false;
+        }
+    }
+
+    void OnCollisionEnter(Collision other) {
+        if(other.gameObject.layer == LayerMask.NameToLayer("Ground")) {
+            grounded = true;
         }
     }
 

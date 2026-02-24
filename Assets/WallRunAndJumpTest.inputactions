@@ -12,14 +12,14 @@
                     "id": "8a1e2f51-4652-4470-8ce6-b44b7fd722af",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Hold",
                     "initialStateCheck": false
                 },
                 {
                     "name": "Submit",
                     "type": "Button",
                     "id": "607dd4af-145c-4965-8b64-5ac62a448daf",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -28,7 +28,7 @@
                     "name": "Cancel",
                     "type": "Button",
                     "id": "b9eccb6c-37b7-4cd3-8ae3-bfafc46b6b3e",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -542,7 +542,7 @@
                 },
                 {
                     "name": "Jump",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "92cf2e7d-8c0c-4366-be0f-1656cfd44ccb",
                     "expectedControlType": "",
                     "processors": "",
@@ -619,11 +619,11 @@
                 },
                 {
                     "name": "",
-                    "id": "e116b1db-dba2-4c51-8e85-0d83e2327060",
+                    "id": "fedbcf8c-7c68-4449-b349-10cd6e8d2fc9",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse;Gamepad;Touch;XR;Joystick",
                     "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false

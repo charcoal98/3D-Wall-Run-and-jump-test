@@ -14,12 +14,27 @@ namespace StarterAssets
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
-		[Tooltip("Sprint speed of the character in m/s")]
-		public float SprintSpeed = 6.0f;
+		/*[Tooltip("Sprint speed of the character in m/s")]
+		public float SprintSpeed = 6.0f;*/
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
-		[Tooltip("Acceleration and deceleration")]
-		public float SpeedChangeRate = 10.0f;
+		/*[Tooltip("Acceleration and deceleration")]
+		public float SpeedChangeRate = 10.0f;*/
+		//Velocity Limits for the BHOP
+		[Tooltip("Max Velocity of the player in air")]
+    	public float max_velocity_ground;
+		[Tooltip("Max Velocity of the player on the ground")]
+    	public float max_velocity_air;
+
+    	//accelerate
+		[Tooltip("Air acceleration of the character in m/s")]
+    	public float air_accelerate;
+		[Tooltip("Ground acceleration of the character in m/s")]
+    	public float ground_accelerate;
+
+    	//friction for surface
+		[Tooltip("Friction for the player while on the ground")]
+    	public float friction;
 
 		[Space(10)]
 		[Tooltip("The height the player can jump")]
@@ -59,6 +74,7 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
+		private Vector3 acceleration = Vector3.zero;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -111,9 +127,8 @@ namespace StarterAssets
 		}
 
 		private void Update()
-		{
+		{	GroundedCheck();
 			JumpAndGravity();
-			GroundedCheck();
 			Move();
 		}
 
@@ -153,7 +168,7 @@ namespace StarterAssets
 
 		private void Move()
 		{
-			// set target speed based on move speed, sprint speed and if sprint is pressed
+			/*// set target speed based on move speed, sprint speed and if sprint is pressed
 			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
 			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
@@ -181,22 +196,71 @@ namespace StarterAssets
 			else
 			{
 				_speed = targetSpeed;
-			}
+			}*/
 
 			// normalise input direction
 			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
 			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 			// if there is a move input rotate player when the player is moving
+			
 			if (_input.move != Vector2.zero)
 			{
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-			}
 
+			}
+			else
+			{
+				inputDirection = Vector3.zero;
+			}
 			// move the player
-			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			Vector3 prevVelo = _controller.velocity;
+			Debug.Log(prevVelo.magnitude);
+			if (Grounded)
+			{
+				acceleration = MoveGround(inputDirection.normalized, prevVelo);
+			}
+			else
+			{
+				acceleration = MoveAir(inputDirection.normalized, prevVelo);
+			}
+			Debug.Log(acceleration);
+			_controller.Move(acceleration * MoveSpeed * Time.deltaTime /*(_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime/**/);
 		}
+
+		//thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html
+    
+    	public Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
+    	{
+    	    float projVel = Vector3.Dot(prevVelocity, accelDir);
+    	    float accelVel = accelerate * Time.deltaTime;
+
+    	    if(projVel + accelVel > max_velocity)
+    	        accelVel = max_velocity - projVel;
+
+    	    return prevVelocity + accelDir * accelVel;
+    	}
+
+    	private Vector3 MoveGround(Vector3 accelDir, Vector3 prevVelocity)
+    	{
+    	    // Apply Friction
+    	    float speed = prevVelocity.magnitude;
+    	    if (speed != 0) // To avoid divide by zero errors
+    	    {
+    	        float drop = speed * friction * Time.deltaTime;
+    	        prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
+    	    }
+
+    	    // ground_accelerate and max_velocity_ground are server-defined inputDirection variables
+    	    return Accelerate(accelDir, prevVelocity, ground_accelerate, max_velocity_ground);
+    	}
+
+    	private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
+    	{
+    	    // air_accelerate and max_velocity_air are server-defined inputDirection variables
+    	    return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
+    	}
 
 		private void JumpAndGravity()
 		{
@@ -208,7 +272,7 @@ namespace StarterAssets
 				// stop our velocity dropping infinitely when grounded
 				if (_verticalVelocity < 0.0f)
 				{
-					_verticalVelocity = -2f;
+					_verticalVelocity = -0f;
 				}
 
 				// Jump
@@ -244,6 +308,7 @@ namespace StarterAssets
 			{
 				_verticalVelocity += Gravity * Time.deltaTime;
 			}
+			_controller.Move(new Vector3(0,_verticalVelocity,0) * Time.deltaTime);
 		}
 
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

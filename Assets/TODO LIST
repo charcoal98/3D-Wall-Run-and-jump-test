@@ -6,3 +6,7 @@ Add wall running
 Make Levels
 Limit Vertical Look - Done
 
+
+velocity stops in air and ground
+auto jump - grounded check
+fall of ledge start with velo

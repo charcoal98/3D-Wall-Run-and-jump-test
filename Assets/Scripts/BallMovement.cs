@@ -20,6 +20,9 @@ public class BallinputDirection : MonoBehaviour
     public float friction;
     Camera cam;
 
+    //Auto Jump bool
+    public bool isJump;
+
     Rigidbody rb;
     public float jumpVelo;
     public float moveSpeed;
@@ -61,6 +64,11 @@ public class BallinputDirection : MonoBehaviour
         if(inputDirection != Vector2.zero){
             move(moveDirection);
         }
+        if (isJump)
+        {
+            Jump();
+            // isJump = false;
+        }
     }
 
     public void rotateCamera()
@@ -73,10 +81,23 @@ public class BallinputDirection : MonoBehaviour
         inputDirection = value.Get<Vector2>();
     }
 
-    void OnJump()
+    /*void OnJump()
     {
-        if (grounded)
+        
+        Jump();
+    }*/
+
+    void OnJump(InputValue value)
+    {
+        Debug.Log(value.isPressed);
+        isJump = value.isPressed;
+    }
+
+    void Jump()
+    {
+        if (grounded){
             rb.AddForce(new Vector3(0,jumpVelo,0), ForceMode.Impulse);
+        }
     }
 
     public void move(Vector3 dir)

@@ -42,15 +42,25 @@ public class BallinputDirection : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Update positon variables
+        origin = transform.position;
+        
+        //Rotate Camera
         if(!Input.GetKey(KeyCode.J)){
             GlobalController.getMouse();
         }
-        //Rotate Camera
         rotateCamera();
         //Debug.DrawLine(Vector3.zero, new Vector3(getCameraLookFoward().normalized.x * 5, 0, getCameraLookFoward().normalized.z * 5), Color.black);
-        moveDirection = inputDirection.x * getCameraLookRight().normalized + inputDirection.y * getCameraLookFoward().normalized;
+        
+        //calculate movement direction based on camera position and inputed direction
+        Vector3 camForward = Vector3.Scale(getCameraLookFoward(), new Vector3(1,0,1));
+        Vector3 camRight = getCameraLookFoward();
+
+        
+        moveDirection = inputDirection.x * camRight.normalized + inputDirection.y * camForward.normalized;
+
         if(inputDirection != Vector2.zero){
-            move(moveDirection);
+            move(moveDirection.normalized);
         }
         if (isJump)
         {
@@ -89,9 +99,19 @@ public class BallinputDirection : MonoBehaviour
         }
     }
 
+
+    //Only check if grounded when coliding with ground
     void OnCollisionEnter(Collision other) {
         if(other.gameObject.layer == LayerMask.NameToLayer("Ground")) {
-            grounded = true;
+            RaycastHit[] hits = Physics.SphereCastAll(origin, .8f, Vector3.down, .5f);
+            for (int i = 0; i < hits.Length; i++)
+            {
+                RaycastHit hit = hits[i];
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                {
+                    grounded = true;
+                }
+            }
         }
     }
 

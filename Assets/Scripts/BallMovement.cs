@@ -59,9 +59,21 @@ public class BallinputDirection : MonoBehaviour
         
         moveDirection = inputDirection.x * camRight.normalized + inputDirection.y * camForward.normalized;
 
+        //Call Movement
         if(inputDirection != Vector2.zero){
-            move(moveDirection.normalized);
+            //move(moveDirection.normalized);
+            Vector3 prevVelo = rb.velocity;
+            if (grounded)
+            {
+                rb.velocity = MoveGround(moveDirection, prevVelo);
+            }
+            else
+            {
+                rb.velocity = MoveAir(moveDirection, prevVelo);
+            }
         }
+
+
         if (isJump)
         {
             Jump();
@@ -79,12 +91,6 @@ public class BallinputDirection : MonoBehaviour
         inputDirection = value.Get<Vector2>();
     }
 
-    /*void OnJump()
-    {
-        
-        Jump();
-    }*/
-
     void OnJump(InputValue value)
     {
         Debug.Log(value.isPressed);
@@ -99,7 +105,6 @@ public class BallinputDirection : MonoBehaviour
         }
     }
 
-
     //Only check if grounded when coliding with ground
     void OnCollisionEnter(Collision other) {
         if(other.gameObject.layer == LayerMask.NameToLayer("Ground")) {
@@ -111,6 +116,7 @@ public class BallinputDirection : MonoBehaviour
                 {
                     grounded = true;
                 }
+
             }
         }
     }

@@ -74,7 +74,7 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
-		private Vector3 acceleration = Vector3.zero;
+		private Vector3 acceleration;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -113,6 +113,7 @@ namespace StarterAssets
 
 		private void Start()
 		{
+			acceleration = Vector3.zero;
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED

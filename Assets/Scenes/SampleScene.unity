@@ -10218,7 +10218,7 @@ MonoBehaviour:
   MoveSpeed: 20
   RotationSpeed: 1
   max_velocity_ground: 20
-  max_velocity_air: 20
+  max_velocity_air: 80
   air_accelerate: 20
   ground_accelerate: 20
   friction: 0

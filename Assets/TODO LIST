@@ -1,12 +1,10 @@
-Add bhoping 
+Add bhoping - Done
     Convert Look Move to use Vector3 instead of 2 - Done
-    auto jump
-
-Add wall running
-Make Levels
+    auto jump -Done
 Limit Vertical Look - Done
 
+Tweak Movement values to be like source
+Add wall running
+Make Levels
 
-velocity stops in air and ground
-auto jump - grounded check
-fall of ledge start with velo
+

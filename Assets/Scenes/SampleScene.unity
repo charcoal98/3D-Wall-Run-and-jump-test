@@ -10220,7 +10220,7 @@ MonoBehaviour:
   max_velocity_ground: 5
   max_velocity_air: 5
   air_accelerate: 2
-  ground_accelerate: 4
+  ground_accelerate: 10
   friction: 5
   JumpHeight: 1
   Gravity: -9.8

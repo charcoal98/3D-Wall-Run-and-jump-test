@@ -75,6 +75,8 @@ namespace StarterAssets
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
 		private Vector3 acceleration;
+		private Vector3 prevVelo;
+		private Vector3 inputDirection;
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
@@ -113,7 +115,8 @@ namespace StarterAssets
 
 		private void Start()
 		{
-			acceleration = Vector3.zero;
+			
+			//acceleration = Vector3.zero;
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -125,6 +128,7 @@ namespace StarterAssets
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
+			
 		}
 
 		private void Update()
@@ -166,7 +170,7 @@ namespace StarterAssets
 				transform.Rotate(Vector3.up * _rotationVelocity);
 			}
 		}
-
+		
 		private void Move()
 		{
 			/*// set target speed based on move speed, sprint speed and if sprint is pressed
@@ -200,7 +204,7 @@ namespace StarterAssets
 			}*/
 
 			// normalise input direction
-			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+			//Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
 			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
 			// if there is a move input rotate player when the player is moving
@@ -209,15 +213,14 @@ namespace StarterAssets
 			{
 				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-
-			}
-			else
-			{
+			} else {
 				inputDirection = Vector3.zero;
 			}
+
 			// move the player
-			Vector3 prevVelo = _controller.velocity;
-			Debug.Log(prevVelo.magnitude);
+			prevVelo = acceleration;
+			Debug.Log("cont"+ _controller.velocity);
+			Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)
 			{
 				acceleration = MoveGround(inputDirection.normalized, prevVelo);
@@ -226,8 +229,8 @@ namespace StarterAssets
 			{
 				acceleration = MoveAir(inputDirection.normalized, prevVelo);
 			}
-			Debug.Log(acceleration);
-			_controller.Move(acceleration * MoveSpeed * Time.deltaTime /*(_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime/**/);
+			Debug.Log("Accel" + acceleration);
+			_controller.Move(acceleration * MoveSpeed * Time.deltaTime /*(_speed * Time.deltaTime)*/+ new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime/**/);
 		}
 
 		//thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html
@@ -237,9 +240,10 @@ namespace StarterAssets
     	    float projVel = Vector3.Dot(prevVelocity, accelDir);
     	    float accelVel = accelerate * Time.deltaTime;
 
-    	    if(projVel + accelVel > max_velocity)
+    	    if(projVel + accelVel > max_velocity){
     	        accelVel = max_velocity - projVel;
-
+				Debug.Log("too fast");
+			}
     	    return prevVelocity + accelDir * accelVel;
     	}
 
@@ -277,6 +281,8 @@ namespace StarterAssets
 				}
 
 				// Jump
+				
+
 				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
@@ -301,6 +307,9 @@ namespace StarterAssets
 				}
 
 				// if we are not grounded, do not jump
+				
+			}
+			if(!_input.jump){
 				_input.jump = false;
 			}
 
@@ -309,7 +318,7 @@ namespace StarterAssets
 			{
 				_verticalVelocity += Gravity * Time.deltaTime;
 			}
-			_controller.Move(new Vector3(0,_verticalVelocity,0) * Time.deltaTime);
+			//_controller.Move(new Vector3(0,_verticalVelocity,0) * Time.deltaTime);
 		}
 
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

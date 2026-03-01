@@ -10215,15 +10215,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55919ac34a26952479f3fc91f777b2fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 20
+  MoveSpeed: 2.5
   RotationSpeed: 1
-  max_velocity_ground: 20
-  max_velocity_air: 80
-  air_accelerate: 20
-  ground_accelerate: 20
-  friction: 0
-  JumpHeight: 0.1
-  Gravity: -2
+  max_velocity_ground: 5
+  max_velocity_air: 5
+  air_accelerate: 2
+  ground_accelerate: 4
+  friction: 5
+  JumpHeight: 1
+  Gravity: -9.8
   JumpTimeout: 0
   FallTimeout: 0.15
   Grounded: 1

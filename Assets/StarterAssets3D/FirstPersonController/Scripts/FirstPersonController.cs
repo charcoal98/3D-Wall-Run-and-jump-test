@@ -186,7 +186,7 @@ namespace StarterAssets
 
 			// move the player
 			prevVelo = acceleration;
-			Vector3 horVelo = _controller.velocity * new Vector3 (1,0,1);
+			Vector3 horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
 			Debug.Log("cont"+ horVelo.magnitude);
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)
@@ -198,7 +198,7 @@ namespace StarterAssets
 				acceleration = MoveAir(inputDirection.normalized, prevVelo);
 			}
 			//Debug.Log("Accel" + acceleration);
-			_controller.Move(acceleration * MoveSpeed * Time.deltaTime /*(_speed * Time.deltaTime)*/+ new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime/**/);
+			_controller.Move(acceleration * Time.deltaTime + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 
 		//thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html

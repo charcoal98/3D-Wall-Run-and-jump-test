@@ -82,6 +82,8 @@ namespace StarterAssets
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
 
+		public Vector3 horVelo;
+
 	
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 		private PlayerInput _playerInput;
@@ -186,7 +188,7 @@ namespace StarterAssets
 
 			// move the player
 			prevVelo = acceleration;
-			Vector3 horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
+			horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
 			Debug.Log("cont"+ horVelo.magnitude);
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)

@@ -8,4 +8,9 @@ Tweak Movement values to be like source - done
 Add wall running --
 Make Levels
 
-Add spedometor
+Add spedometor --
+
+Ideas to make it eaiser to gauge speed
+change speedometer color
+change FOV
+play a WHOOSH sound that changes in pitch

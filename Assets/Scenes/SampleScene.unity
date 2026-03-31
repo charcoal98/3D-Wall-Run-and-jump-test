@@ -3950,7 +3950,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1111407108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14525,7 +14525,7 @@ MonoBehaviour:
   RotationSpeed: 1
   max_velocity_ground: 25
   max_velocity_air: 15
-  air_accelerate: 7
+  air_accelerate: 5
   ground_accelerate: 15
   friction: 1
   JumpHeight: 1

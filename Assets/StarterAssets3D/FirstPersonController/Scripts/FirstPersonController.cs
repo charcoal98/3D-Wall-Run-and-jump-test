@@ -193,11 +193,11 @@ namespace StarterAssets
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)
 			{
-				acceleration = MoveGround(inputDirection.normalized, prevVelo);
+				acceleration = MoveGround(inputDirection, prevVelo);
 			}
 			else
 			{
-				acceleration = MoveAir(inputDirection.normalized, prevVelo);
+				acceleration = MoveAir(inputDirection, prevVelo);
 			}
 			//Debug.Log("Accel" + acceleration);
 			_controller.Move(acceleration * Time.deltaTime + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);

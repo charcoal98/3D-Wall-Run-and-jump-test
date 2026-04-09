@@ -13,27 +13,39 @@ public class MasterControl : MonoBehaviour
     public GameObject player;
     public CinemachineVirtualCamera cam;
 
+    public static MasterControl instance;
+
+    AudioSource audioSource;
+    public AudioClip wind;
+
+    void Awake()
+    {
+        instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         playerCont = player.transform.GetChild(2).GetComponent<FirstPersonController>();
         cam = player.transform.GetChild(1).GetComponent<CinemachineVirtualCamera>();
+        audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(wind);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        windFX();
         velo = playerCont.horVelo.magnitude;
         velo *= 100;
         velo = Mathf.Floor(velo);
         velo /= 100;
         velometor.text = velo + "m/s";
-        speedometorColor(velo);
-        adjustFov(velo);
+        speedometorColor();
+        adjustFov();
     }
 
-    void speedometorColor(float velo)
+    void speedometorColor()
     {
         //float colorVal = 0.0f;
         if (velo == 0)
@@ -50,9 +62,21 @@ public class MasterControl : MonoBehaviour
         print(velometor.color);
     }
 
-    void adjustFov(float velo)
+    void adjustFov()
     {
         float Fov = 2f * velo + 60;
         cam.m_Lens.FieldOfView = Fov;//Mathf.Lerp(cam.m_Lens.FieldOfView, Fov,  0.1f * Time.deltaTime);
+    }
+
+    void windFX()
+    {
+        float volume = 0;
+        volume = velo/15;
+        if (velo >= 15)
+        {
+            volume = 1;
+        }
+
+        audioSource.volume = volume;
     }
 }

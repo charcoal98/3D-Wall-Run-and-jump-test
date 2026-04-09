@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 #endif
@@ -11,6 +13,12 @@ namespace StarterAssets
 #endif
 	public class FirstPersonController : MonoBehaviour
 	{
+		AudioSource audioSource;
+		public AudioClip walk;
+		public AudioClip jump;
+		public static FirstPersonController instance;
+
+
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
@@ -113,11 +121,15 @@ namespace StarterAssets
 			{
 				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 			}
+
 		}
 
 		private void Start()
 		{
-			
+
+			//audio
+			audioSource = GetComponent<AudioSource>();
+	
 			//acceleration = Vector3.zero;
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
@@ -223,6 +235,7 @@ namespace StarterAssets
     	    float speed = prevVelocity.magnitude;
     	    if (speed != 0) // To avoid divide by zero errors
     	    {
+				//StartCoroutine(PlayWalkSound(ground_accelerate));
     	        float drop = speed * friction * Time.deltaTime;
     	        prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
     	    }
@@ -256,7 +269,9 @@ namespace StarterAssets
 				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
+					PlayJumpSound();
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					
 				}
 
 				// jump timeout
@@ -308,6 +323,17 @@ namespace StarterAssets
 
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
+		}
+		public void PlayJumpSound()
+		{
+			audioSource.PlayOneShot(jump);
+		}
+
+		IEnumerator PlayWalkSound(float velo)
+		{
+		 	float rate = velo * -1 + 20;
+			yield return new WaitForSeconds(rate);
+			audioSource.PlayOneShot(walk);
 		}
 	}
 }

@@ -15281,7 +15281,7 @@ MonoBehaviour:
   max_velocity_air: 15
   air_accelerate: 5
   ground_accelerate: 15
-  friction: 1
+  friction: 2
   JumpHeight: 1
   Gravity: -9.8
   JumpTimeout: 0

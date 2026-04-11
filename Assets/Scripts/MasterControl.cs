@@ -9,6 +9,7 @@ public class MasterControl : MonoBehaviour
 {
     public TMP_Text velometor;
     public float velo;
+    public float accel;
     public FirstPersonController playerCont;
     public GameObject player;
     public CinemachineVirtualCamera cam;
@@ -37,6 +38,7 @@ public class MasterControl : MonoBehaviour
     {
         windFX();
         velo = playerCont.horVelo.magnitude;
+        accel = playerCont.acceleration.magnitude;
         velo *= 100;
         velo = Mathf.Floor(velo);
         velo /= 100;
@@ -59,20 +61,20 @@ public class MasterControl : MonoBehaviour
         else
             velometor.color = Color.red;
 
-        print(velometor.color);
+        //print(velometor.color);
     }
 
     void adjustFov()
     {
-        float Fov = 2f * velo + 60;
+        float Fov = 2f * accel + 60;
         cam.m_Lens.FieldOfView = Fov;//Mathf.Lerp(cam.m_Lens.FieldOfView, Fov,  0.1f * Time.deltaTime);
     }
 
     void windFX()
     {
         float volume = 0;
-        volume = velo/15;
-        if (velo >= 15)
+        volume = accel/15;
+        if (accel >= 15)
         {
             volume = 1;
         }

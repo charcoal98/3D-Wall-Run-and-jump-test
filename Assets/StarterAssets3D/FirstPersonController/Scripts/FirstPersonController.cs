@@ -77,7 +77,7 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
-		private Vector3 acceleration;
+		public Vector3 acceleration;
 		private Vector3 prevVelo;
 		private Vector3 inputDirection;
 
@@ -197,7 +197,7 @@ namespace StarterAssets
 			
 			horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
 			prevVelo = acceleration;
-			Debug.Log("cont"+ horVelo.magnitude);
+			//Debug.Log("cont"+ horVelo.magnitude);
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)
 			{

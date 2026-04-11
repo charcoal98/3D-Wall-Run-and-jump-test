@@ -20,14 +20,9 @@ namespace StarterAssets
 
 
 		[Header("Player")]
-		[Tooltip("Move speed of the character in m/s")]
-		public float MoveSpeed = 4.0f;
-		/*[Tooltip("Sprint speed of the character in m/s")]
-		public float SprintSpeed = 6.0f;*/
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
-		/*[Tooltip("Acceleration and deceleration")]
-		public float SpeedChangeRate = 10.0f;*/
+		
 		//Velocity Limits for the BHOP
 		[Tooltip("Max Velocity of the player in air")]
     	public float max_velocity_ground;
@@ -199,8 +194,9 @@ namespace StarterAssets
 			}
 
 			// move the player
-			prevVelo = acceleration;
+			
 			horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
+			prevVelo = acceleration;
 			Debug.Log("cont"+ horVelo.magnitude);
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)

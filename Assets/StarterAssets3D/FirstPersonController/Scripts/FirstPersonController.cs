@@ -197,6 +197,9 @@ namespace StarterAssets
 			
 			horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
 			prevVelo = acceleration;
+			if (horVelo.magnitude == 0){
+				prevVelo = Vector3.zero;
+			}
 			//Debug.Log("cont"+ horVelo.magnitude);
 			//Debug.Log("prevVelo" + prevVelo.magnitude);
 			if (Grounded)

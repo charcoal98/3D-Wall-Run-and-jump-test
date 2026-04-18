@@ -200,8 +200,7 @@ namespace StarterAssets
 			if (horVelo.magnitude == 0){
 				prevVelo = Vector3.zero;
 			}
-			//Debug.Log("cont"+ horVelo.magnitude);
-			//Debug.Log("prevVelo" + prevVelo.magnitude);
+
 			if (Grounded)
 			{
 				acceleration = MoveGround(inputDirection, prevVelo);
@@ -210,7 +209,7 @@ namespace StarterAssets
 			{
 				acceleration = MoveAir(inputDirection, prevVelo);
 			}
-			//Debug.Log("Accel" + acceleration);
+
 			_controller.Move(acceleration * Time.deltaTime + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 

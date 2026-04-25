@@ -19,26 +19,11 @@ namespace StarterAssets
 		public static FirstPersonController instance;
 
 
+
 		[Header("Player")]
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
 		
-		//Velocity Limits for the BHOP
-		[Tooltip("Max Velocity of the player in air")]
-    	public float max_velocity_ground;
-		[Tooltip("Max Velocity of the player on the ground")]
-    	public float max_velocity_air;
-
-    	//accelerate
-		[Tooltip("Air acceleration of the character in m/s")]
-    	public float air_accelerate;
-		[Tooltip("Ground acceleration of the character in m/s")]
-    	public float ground_accelerate;
-
-    	//friction for surface
-		[Tooltip("Friction for the player while on the ground")]
-    	public float friction;
-
 		[Space(10)]
 		[Tooltip("The height the player can jump")]
 		public float JumpHeight = 1.2f;
@@ -77,15 +62,40 @@ namespace StarterAssets
 		private float _rotationVelocity;
 		private float _verticalVelocity;
 		private float _terminalVelocity = 53.0f;
+
+
+
+		//Custom Movement Vars
 		public Vector3 acceleration;
 		private Vector3 prevVelo;
 		private Vector3 inputDirection;
+
+		//Velocity Limits for the BHOP
+		[Tooltip("Max Velocity of the player in air")]
+    	public float max_velocity_ground;
+		[Tooltip("Max Velocity of the player on the ground")]
+    	public float max_velocity_air;
+
+    	//accelerate speed
+		[Tooltip("Air acceleration of the character in m/s")]
+    	public float air_accelerate;
+		[Tooltip("Ground acceleration of the character in m/s")]
+    	public float ground_accelerate;
+
+    	//friction for surface
+		[Tooltip("Friction for the player while on the ground")]
+    	public float friction;
+
+		//horizontal velocity needed because magnitude calculations of player speed should not include gravity since the player has no controll of it
+		public Vector3 horVelo;
+
+
 
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
 
-		public Vector3 horVelo;
+		
 
 	
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
@@ -167,7 +177,11 @@ namespace StarterAssets
 				float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 				
 				_cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
-				_rotationVelocity = 0;/*_input.look.x * RotationSpeed * deltaTimeMultiplier;*/
+
+				/*Disabled horizontal mouse look because it in playtesting seemed to distract players from straifing. 
+				Players naturally try to look at the platforms they were trying to land on while holding forward instead of straifing
+				which meant that they were still adding to their forward momentum and were not moving. See Ascii Art Below ↓ */
+				_rotationVelocity = 0;
 
 				// clamp our pitch rotation
 				_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
@@ -179,6 +193,20 @@ namespace StarterAssets
 				transform.Rotate(Vector3.up * _rotationVelocity);
 			}
 		}
+
+//			Why You Need To Let Go of W While Straifing
+//                              ↑                                     
+//                              /                                     
+//     ↑             ↗         |                                   ↑  
+//     |            /          /                                   /  
+//     |     +     /    =     |                                   |   
+//     |          /           /                                   /   
+// x=0, y=1   x=1, y=1       |      Which gets trunkated to x=0.5, y=1
+//                           /                                        
+//                       x=1, y=2       
+//This was intentional to mimic the way momentum feels in the source engine                              
+
+		
 		
 		private void Move()
 		{
@@ -187,7 +215,6 @@ namespace StarterAssets
 			
 			if (_input.move != Vector2.zero)
 			{
-				// move
 				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
 			} else {
 				inputDirection = Vector3.zero;
@@ -196,7 +223,8 @@ namespace StarterAssets
 			// move the player
 			
 			horVelo = new Vector3 (_controller.velocity.x,0,_controller.velocity.z);
-			prevVelo = acceleration;
+			prevVelo = acceleration; //uses the calculated acceleration instead of the character controllers velocity so you don't instantly lose all speed when you clip a platform
+			
 			if (horVelo.magnitude == 0){
 				prevVelo = Vector3.zero;
 			}
@@ -213,7 +241,8 @@ namespace StarterAssets
 			_controller.Move(acceleration * Time.deltaTime + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 
-		//thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html
+		//thanks to Adrian Biagioli for the code  https://adrianb.io/2015/02/14/bunnyhop.html This is the code that defines how momentum is handled
+		//please click the link vector math is hard to explain with out diagrams 
     
     	public Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
     	{
@@ -222,7 +251,6 @@ namespace StarterAssets
 
     	    if(projVel + accelVel > max_velocity){
     	        accelVel = max_velocity - projVel;
-				Debug.Log("too fast");
 			}
     	    return prevVelocity + accelDir * accelVel;
     	}
@@ -248,6 +276,8 @@ namespace StarterAssets
     	    return Accelerate(accelDir, prevVelocity, air_accelerate, max_velocity_air);
     	}
 
+
+
 		private void JumpAndGravity()
 		{
 			if (Grounded)
@@ -262,8 +292,6 @@ namespace StarterAssets
 				}
 
 				// Jump
-				
-
 				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
@@ -301,7 +329,6 @@ namespace StarterAssets
 			{
 				_verticalVelocity += Gravity * Time.deltaTime;
 			}
-			//_controller.Move(new Vector3(0,_verticalVelocity,0) * Time.deltaTime);
 		}
 
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -322,16 +349,10 @@ namespace StarterAssets
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
 		}
+
 		public void PlayJumpSound()
 		{
 			audioSource.PlayOneShot(jump);
-		}
-
-		IEnumerator PlayWalkSound(float velo)
-		{
-		 	float rate = velo * -1 + 20;
-			yield return new WaitForSeconds(rate);
-			audioSource.PlayOneShot(walk);
 		}
 	}
 }

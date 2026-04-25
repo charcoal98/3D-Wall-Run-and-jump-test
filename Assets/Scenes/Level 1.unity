@@ -2002,16 +2002,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'W: Foward
-
-    S: Backward
-
-    A: Left
-
-    D: Right
-
-    HOLD SPACE:
-    BHOP'
+  m_text: "W: Foward\nS: Backward\nA: Left\nD: Right\nHOLD SPACE: BHOP\n\nLet Your
+    Current Momentum \nCarry You Foward While Straifing\n(Let go of W to straif harder)"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11287,8 +11279,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   velometor: {fileID: 959903434}
-  velo: 0
-  accel: 0
+  contVelo: 0
+  calcVelo: 0
   playerCont: {fileID: 0}
   player: {fileID: 7706037892127168215}
   cam: {fileID: 0}

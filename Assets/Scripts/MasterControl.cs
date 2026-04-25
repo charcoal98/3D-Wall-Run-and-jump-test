@@ -8,8 +8,8 @@ using Cinemachine;
 public class MasterControl : MonoBehaviour
 {
     public TMP_Text velometor;
-    public float velo;
-    public float accel;
+    public float contVelo; //is the horizontal velocity of the character controler (how the player is actually moving in engine)
+    public float calcVelo; //is the horizontal velocity of the movement script (how the player is moving in the movement calculations)
     public FirstPersonController playerCont;
     public GameObject player;
     public CinemachineVirtualCamera cam;
@@ -37,44 +37,53 @@ public class MasterControl : MonoBehaviour
     void Update()
     {
         windFX();
-        velo = playerCont.horVelo.magnitude;
-        accel = playerCont.acceleration.magnitude;
-        velo *= 100;
-        velo = Mathf.Floor(velo);
-        velo /= 100;
-        velometor.text = velo + "m/s";
+        contVelo = playerCont.horVelo.magnitude;
+        calcVelo = playerCont.acceleration.magnitude;
+        contVelo *= 100;
+        contVelo = Mathf.Floor(contVelo);
+        contVelo /= 100;
+        velometor.text = contVelo + "m/s";
         speedometorColor();
         adjustFov();
     }
 
     void speedometorColor()
     {
-        //float colorVal = 0.0f;
-        if (velo == 0)
-            velometor.color = Color.black;
-        else if (velo < 5)
-            velometor.color = Color.green;
-        else if (velo < 10)
-            velometor.color = new Color(100, 100, 0);
-        else if (velo < 15)
-            velometor.color = Color.magenta;/*new Color(255, 150, 0);*/
-        else
-            velometor.color = Color.red;
-
-        //print(velometor.color);
+        switch (contVelo)
+        {
+            case 0:
+                velometor.color = Color.black;
+                break;
+            case < 5:
+                velometor.color = Color.green;
+                break;
+            case < 10:
+                velometor.color = new Color(100, 100, 0);
+                break;
+            case < 15:
+                velometor.color = Color.magenta;
+                break;
+            case >= 15:
+                velometor.color = Color.red;
+                break;
+        }
     }
 
     void adjustFov()
     {
-        float Fov = 2f * accel + 60;
-        cam.m_Lens.FieldOfView = Fov;//Mathf.Lerp(cam.m_Lens.FieldOfView, Fov,  0.1f * Time.deltaTime);
+        float Fov = 2f * calcVelo + 60; //linear equation FOV should follow the graph of y = 2x + 60, so that the minimum fov is 60 and fov at max speed of 15 is 90
+        cam.m_Lens.FieldOfView = Fov;
     }
 
     void windFX()
     {
+        //WindFX is allways playing but is muted when not moving
+        //When you move it increases in volume
         float volume = 0;
-        volume = accel/15;
-        if (accel >= 15)
+        volume = calcVelo/15;
+
+        //audioSource.volume is on a scale of 0 to 1 so if calcVelo is greater than 
+        if (calcVelo >= 15)
         {
             volume = 1;
         }
